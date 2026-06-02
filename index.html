@@ -888,7 +888,7 @@ function buildWADaily(){
   if(notes) t+=`\n📝 *Catatan:*\n${notes}\n`;
   t+='\n\n┄┄┄┄┄┄┄┄┄┄\n\n';
   t+='📌 *Nota:* Leads yang belum di-engage hari ini perlu di-engage esok sebelum jam 11 pagi.';
-  t+=`\n\n_${getCfg().orgName} — Customer Service_`;
+  t+=`\n\n_${window._orgName||getCfg().orgName||'NGO'} — Customer Service_`;
   return t;
 }
 
@@ -911,7 +911,7 @@ async function buildWAWeekly(){
   if(notes) t+=`\n📝 *Catatan:*\n${notes}\n`;
   t+='\n\n┄┄┄┄┄┄┄┄┄┄\n\n';
   t+='📌 *Nota:* Leads yang belum di-engage hari ini perlu di-engage esok sebelum jam 11 pagi.';
-  t+=`\n\n_${getCfg().orgName} — Customer Service_`;
+  t+=`\n\n_${window._orgName||getCfg().orgName||'NGO'} — Customer Service_`;
   return t;
 }
 
@@ -937,7 +937,7 @@ async function buildWAMonthly(){
   if(notes) t+=`\n📝 *Catatan:*\n${notes}\n`;
   t+='\n\n┄┄┄┄┄┄┄┄┄┄\n\n';
   t+='📌 *Nota:* Leads yang belum di-engage hari ini perlu di-engage esok sebelum jam 11 pagi.';
-  t+=`\n\n_${getCfg().orgName} — Customer Service_`;
+  t+=`\n\n_${window._orgName||getCfg().orgName||'NGO'} — Customer Service_`;
   return t;
 }
 
@@ -1242,22 +1242,37 @@ function wizFinish(){
   localStorage.setItem('org_name', orgName);
   localStorage.setItem('theme_color', themeColor);
   if(logoUrl) localStorage.setItem('org_logo', logoUrl);
+  else localStorage.removeItem('org_logo');
 
   hideSetupWizard();
-  applyOrgBranding();
-  checkConn();
-  loadStaffNames();
-  toast('🎉 Setup selesai! Selamat menggunakan CS Report System.');
+
+  // Small delay then apply branding
+  setTimeout(()=>{
+    applyOrgBranding();
+    checkConn();
+    loadStaffNames();
+    toast('🎉 Setup selesai! Selamat menggunakan ' + orgName + '!');
+  }, 200);
 }
 
 function applyOrgBranding(){
   const cfg = getCfg();
+  console.log('[Branding] Applying:', cfg);
+
   // Apply theme color to header
   const header = document.querySelector('.app-header');
-  if(header && cfg.themeColor) header.style.background = cfg.themeColor;
-  // Apply org name
+  if(header){
+    header.style.background = cfg.themeColor || '#f4f6fb';
+    console.log('[Branding] Header color:', cfg.themeColor);
+  }
+
+  // Apply org name in header
   const nameEl = document.getElementById('org-name-display');
-  if(nameEl && cfg.orgName) nameEl.textContent = cfg.orgName;
+  if(nameEl){
+    nameEl.textContent = cfg.orgName || 'CS Report';
+    console.log('[Branding] Org name:', cfg.orgName);
+  }
+
   // Apply logo
   const logoImg = document.getElementById('org-logo-img');
   if(logoImg){
@@ -1268,7 +1283,14 @@ function applyOrgBranding(){
       logoImg.style.display = 'none';
     }
   }
-  // Update setup panel status
+
+  // Update page title
+  document.title = (cfg.orgName||'CS Report') + ' — CS Report System';
+
+  // Update WA footer reference
+  window._orgName = cfg.orgName || 'NGO';
+
+  // Update setup panel
   updateSetupPanelStatus();
 }
 
@@ -1327,10 +1349,14 @@ function saveOrgSettings(){
   const color = document.getElementById('cfg-theme-color').value;
   const logo = document.getElementById('cfg-logo-url').value.trim();
   if(name) localStorage.setItem('org_name', name);
+  else localStorage.removeItem('org_name');
   localStorage.setItem('theme_color', color);
-  if(logo) localStorage.setItem('org_logo', logo); else localStorage.removeItem('org_logo');
-  applyOrgBranding();
-  toast('✅ Tetapan organisasi disimpan!');
+  if(logo) localStorage.setItem('org_logo', logo);
+  else localStorage.removeItem('org_logo');
+  setTimeout(()=>{
+    applyOrgBranding();
+    toast('✅ Tetapan disimpan! Nama: ' + (name||'—') + ' | Warna: ' + color);
+  }, 100);
 }
 
 function resetAllSettings(){

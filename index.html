@@ -402,7 +402,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.5}
     </div>
   </div>
 
-  <div style="margin-bottom:14px"><button class="btn btn-secondary" style="color:var(--red);border-color:#fca5a5;font-size:12px" onclick="resetAllSettings()">🔄 Reset Semua Settings</button></div>
+  <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-secondary" style="font-size:12px" onclick="showSetupWizard()">🧙 Buka Setup Wizard</button><button class="btn btn-secondary" style="color:var(--red);border-color:#fca5a5;font-size:12px" onclick="resetAllSettings()">🔄 Reset Semua Settings</button></div>
   <div class="card">
     <div class="card-header"><div class="card-icon" style="background:#f0fdf4">📋</div><div class="card-title">SQL untuk Buat Table</div></div>
     <div class="card-body">
@@ -529,14 +529,7 @@ document.getElementById('m-month').value=today.toISOString().slice(0,7);
   document.getElementById('w-to').value=d2.toISOString().split('T')[0];
 })();
 
-// Check if configured — show wizard if not
-if(!isConfigured()){
-  showSetupWizard();
-} else {
-  applyOrgBranding();
-  checkConn();
-  loadStaffNames();
-}
+// Init moved to bottom — after all functions defined
 
 // ── HELPERS ──
 function rc(v){if(v===null)return'rn';if(v>=90)return'rh';if(v>=70)return'rm';return'rl';}
@@ -1169,8 +1162,11 @@ document.head.appendChild(notifStyle);
 
 // ══ SETUP WIZARD ══
 function showSetupWizard(){
-  document.getElementById('setup-wizard').style.display='block';
+  const wiz = document.getElementById('setup-wizard');
+  if(!wiz){ console.error('Wizard element not found!'); return; }
+  wiz.style.display='block';
   document.body.style.overflow='hidden';
+  console.log('Wizard shown');
 }
 function hideSetupWizard(){
   document.getElementById('setup-wizard').style.display='none';
@@ -1344,6 +1340,20 @@ function resetAllSettings(){
 }
 
 dRecalc();
+
+// ── MAIN INIT — runs after all JS defined ──
+(function(){
+  // Small delay to ensure DOM is fully ready
+  setTimeout(function(){
+    if(!isConfigured()){
+      showSetupWizard();
+    } else {
+      applyOrgBranding();
+      checkConn();
+      loadStaffNames();
+    }
+  }, 100);
+})();
 </script>
 
 <!-- ══ SETUP WIZARD OVERLAY ══ -->

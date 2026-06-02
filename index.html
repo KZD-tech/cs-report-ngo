@@ -443,8 +443,26 @@ const CH=[
 ];
 
 // ── FIX 1: Hardcoded credentials — no localStorage needed ──
-const SB_URL='[URL Supabase anda]';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNscmx4cHpydWV0bnBmaHdtd2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNjgzODEsImV4cCI6MjA5NTk0NDM4MX0.IzVJT5VZ3ChwBQwiBGE0tKZVmgejwzDW8DgCRhKJuz0';
+// ── DYNAMIC CONFIG — reads from localStorage ──
+function getCfg(){
+  return{
+    url: localStorage.getItem('sb_url')||'',
+    key: localStorage.getItem('sb_key')||'',
+    orgName: localStorage.getItem('org_name')||'CS Report',
+    orgLogo: localStorage.getItem('org_logo')||'',
+    themeColor: localStorage.getItem('theme_color')||'#f4f6fb'
+  };
+}
+function isConfigured(){
+  const c=getCfg();
+  return !!(c.url&&c.key);
+}
+function saveCfg(url,key){
+  localStorage.setItem('sb_url',url);
+  localStorage.setItem('sb_key',key);
+}
+// Temp vars for sbFetch — will be overridden per call
+let SB_URL='', SB_KEY='';
 
 // ── FIX 2: Clean sbFetch — no header conflict ──
 async function sbFetch(path, method='GET', body=null, extraHeaders={}){

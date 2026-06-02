@@ -361,24 +361,71 @@ textarea{resize:vertical;min-height:70px;line-height:1.5}
   <div class="page-title">Setup</div>
   <p class="page-sub">Maklumat sambungan sistem.</p>
 <div id="setup-conn-status" style="margin-bottom:14px"></div>
+
   <div class="card">
-    <div class="card-header"><div class="card-icon" style="background:#eef2ff">🔑</div><div class="card-title">Info Sambungan</div></div>
+    <div class="card-header"><div class="card-icon" style="background:#eef2ff">🔑</div><div class="card-title">Credentials Supabase</div></div>
     <div class="card-body">
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;width:80px">URL</span>
-          <span style="font-size:12px;color:var(--text);font-family:'DM Mono',monospace;background:#f0f2f5;padding:4px 10px;border-radius:6px">[URL Supabase anda]</span>
+      <div class="field-group" style="margin-bottom:10px">
+        <label>Supabase Project URL</label>
+        <input type="url" id="cfg-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+      </div>
+      <div class="field-group" style="margin-bottom:14px">
+        <label>Supabase Anon Key</label>
+        <input type="password" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveCredentials()">💾 Simpan & Test</button>
+        <button class="btn btn-secondary" onclick="checkConn(true)">🔄 Test Sambungan</button>
+      </div>
+      <div id="setup-status" style="margin-top:10px;font-size:13px;display:none"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon" style="background:#f5f3ff">🏢</div><div class="card-title">Tetapan Organisasi</div></div>
+    <div class="card-body">
+      <div class="meta-grid">
+        <div class="field-group">
+          <label>Nama Organisasi</label>
+          <input type="text" id="cfg-org-name" placeholder="Nama NGO anda">
         </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <span style="font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;width:80px">Status</span>
-          <span id="setup-status" style="font-size:12px;color:var(--text-secondary)">Checking...</span>
+        <div class="field-group">
+          <label>Warna Tema Header</label>
+          <input type="color" id="cfg-theme-color" value="#f4f6fb" style="height:38px;padding:4px;cursor:pointer;width:100%">
+        </div>
+        <div class="field-group full" style="grid-column:1/-1">
+          <label>Logo Organisasi (Optional)</label>
+          <div style="background:#f8f9fc;border:1.5px dashed #c5d0e8;border-radius:10px;padding:14px">
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <button type="button" id="cfg-logo-tab-upload" onclick="cfgLogoTab('upload')" style="flex:1;padding:5px;border-radius:7px;border:1.5px solid var(--blue);background:var(--blue);color:#fff;font-size:11px;font-weight:500;cursor:pointer">⬆ Upload Fail</button>
+              <button type="button" id="cfg-logo-tab-url" onclick="cfgLogoTab('url')" style="flex:1;padding:5px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text-secondary);font-size:11px;font-weight:500;cursor:pointer">🔗 Guna URL</button>
+            </div>
+            <div id="cfg-logo-upload-panel">
+              <label for="cfg-logo-file" style="display:block;text-align:center;cursor:pointer;padding:10px;border-radius:8px;background:#eef4ff;border:1px dashed #2557a7">
+                <div style="font-size:22px;margin-bottom:4px">🖼️</div>
+                <div style="font-size:12px;font-weight:500;color:var(--blue)">Klik untuk pilih fail logo</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:3px">PNG / SVG / WebP &bull; Saiz terbaik: <strong>400×120px</strong> &bull; Maks 500KB</div>
+              </label>
+              <input type="file" id="cfg-logo-file" accept="image/png,image/svg+xml,image/webp,image/jpeg" style="display:none" onchange="cfgLogoPreview(this)">
+            </div>
+            <div id="cfg-logo-url-panel" style="display:none">
+              <input type="url" id="cfg-logo-url" placeholder="https://example.com/logo.png" style="margin-bottom:4px">
+              <div style="font-size:11px;color:var(--text-muted)">Guna URL logo yang boleh diakses awam</div>
+            </div>
+            <div id="cfg-logo-preview-box" style="display:none;margin-top:10px;padding:10px;background:#fff;border-radius:8px;text-align:center;border:1px solid var(--border)">
+              <img id="cfg-logo-preview-img" style="max-height:50px;max-width:180px;object-fit:contain">
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="cfg-logo-preview-info"></div>
+              <button type="button" onclick="cfgLogoClear()" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;margin-top:4px">✕ Buang logo</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div style="margin-top:12px">
-        <button class="btn btn-secondary" style="font-size:12px" onclick="checkConn(true)">🔄 Test Sambungan</button>
+      <div style="margin-top:14px">
+        <button class="btn btn-primary" onclick="saveOrgSettings()">💾 Simpan Tetapan</button>
       </div>
     </div>
   </div>
+
   <div class="card">
     <div class="card-header"><div class="card-icon" style="background:#fff7ed">🔔</div><div class="card-title">Tetapan Notifikasi</div></div>
     <div class="card-body">
@@ -561,6 +608,7 @@ function switchTab(name,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
   if(name==='history'){loadStaffNames();renderHistory();}
+  if(name==='setup'){updateSetupPanelStatus();initLogoPreviewInSetup();}
   if(name==='weekly'){loadStaffNames();wLoad();}
   if(name==='monthly'){loadStaffNames();mLoad();}
 }
@@ -1255,7 +1303,7 @@ async function wizTestConn(){
 function wizFinish(){
   const orgName = document.getElementById('wiz-org-name').value.trim() || 'NGO';
   const themeColor = document.getElementById('wiz-theme-color').value || '#0f1f3d';
-  const logoUrl = document.getElementById('wiz-logo-url').value.trim();
+  const logoUrl = getWizLogoValue();
 
   localStorage.setItem('org_name', orgName);
   localStorage.setItem('theme_color', themeColor);
@@ -1365,7 +1413,7 @@ async function saveCredentials(){
 function saveOrgSettings(){
   const name = document.getElementById('cfg-org-name').value.trim();
   const color = document.getElementById('cfg-theme-color').value;
-  const logo = document.getElementById('cfg-logo-url').value.trim();
+  const logo = getCfgLogoValue();
   if(name) localStorage.setItem('org_name', name);
   else localStorage.removeItem('org_name');
   localStorage.setItem('theme_color', color);
@@ -1382,6 +1430,130 @@ function resetAllSettings(){
   ['sb_url','sb_key','org_name','org_logo','theme_color','notif_time_1','notif_time_2'].forEach(k=>localStorage.removeItem(k));
   location.reload();
 }
+
+
+// ── LOGO UPLOAD HANDLERS ──
+function wizLogoTab(tab){
+  document.getElementById('wiz-logo-upload-panel').style.display = tab==='upload' ? 'block' : 'none';
+  document.getElementById('wiz-logo-url-panel').style.display = tab==='url' ? 'block' : 'none';
+  const uploadBtn = document.getElementById('wiz-logo-tab-upload');
+  const urlBtn = document.getElementById('wiz-logo-tab-url');
+  if(tab==='upload'){
+    uploadBtn.style.background='var(--blue)'; uploadBtn.style.color='#fff'; uploadBtn.style.borderColor='var(--blue)';
+    urlBtn.style.background='#fff'; urlBtn.style.color='var(--text-secondary)'; urlBtn.style.borderColor='var(--border)';
+  } else {
+    urlBtn.style.background='var(--blue)'; urlBtn.style.color='#fff'; urlBtn.style.borderColor='var(--blue)';
+    uploadBtn.style.background='#fff'; uploadBtn.style.color='var(--text-secondary)'; uploadBtn.style.borderColor='var(--border)';
+  }
+}
+
+function cfgLogoTab(tab){
+  document.getElementById('cfg-logo-upload-panel').style.display = tab==='upload' ? 'block' : 'none';
+  document.getElementById('cfg-logo-url-panel').style.display = tab==='url' ? 'block' : 'none';
+  const uploadBtn = document.getElementById('cfg-logo-tab-upload');
+  const urlBtn = document.getElementById('cfg-logo-tab-url');
+  if(tab==='upload'){
+    uploadBtn.style.background='var(--blue)'; uploadBtn.style.color='#fff'; uploadBtn.style.borderColor='var(--blue)';
+    urlBtn.style.background='#fff'; urlBtn.style.color='var(--text-secondary)'; urlBtn.style.borderColor='var(--border)';
+  } else {
+    urlBtn.style.background='var(--blue)'; urlBtn.style.color='#fff'; urlBtn.style.borderColor='var(--blue)';
+    uploadBtn.style.background='#fff'; uploadBtn.style.color='var(--text-secondary)'; uploadBtn.style.borderColor='var(--border)';
+  }
+}
+
+function readFileAsBase64(file){
+  return new Promise((res,rej)=>{
+    if(file.size > 512000){ rej(new Error('Fail terlalu besar (maks 500KB)')); return; }
+    const reader = new FileReader();
+    reader.onload = e => res(e.target.result); // returns data:image/...;base64,...
+    reader.onerror = () => rej(new Error('Gagal baca fail'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function showLogoPreview(prefix, src, info){
+  const box = document.getElementById(prefix+'-logo-preview-box');
+  const img = document.getElementById(prefix+'-logo-preview-img');
+  const infoEl = document.getElementById(prefix+'-logo-preview-info');
+  if(box) box.style.display='block';
+  if(img) img.src=src;
+  if(infoEl) infoEl.textContent=info||'';
+  // Store in temp var
+  window['_logo_'+prefix] = src;
+}
+
+async function wizLogoPreview(input){
+  const file = input.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsBase64(file);
+    const sizeKB = Math.round(file.size/1024);
+    showLogoPreview('wiz', dataUrl, `${file.name} • ${sizeKB}KB`);
+    toast('✅ Logo dipilih: '+file.name);
+  }catch(e){
+    toast('❌ '+e.message);
+    input.value='';
+  }
+}
+
+async function cfgLogoPreview(input){
+  const file = input.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsBase64(file);
+    const sizeKB = Math.round(file.size/1024);
+    showLogoPreview('cfg', dataUrl, `${file.name} • ${sizeKB}KB`);
+    toast('✅ Logo dipilih: '+file.name);
+  }catch(e){
+    toast('❌ '+e.message);
+    input.value='';
+  }
+}
+
+function wizLogoClear(){
+  window._logo_wiz = null;
+  const box=document.getElementById('wiz-logo-preview-box');
+  if(box) box.style.display='none';
+  const input=document.getElementById('wiz-logo-file');
+  if(input) input.value='';
+}
+
+function cfgLogoClear(){
+  window._logo_cfg = null;
+  localStorage.removeItem('org_logo');
+  const box=document.getElementById('cfg-logo-preview-box');
+  if(box) box.style.display='none';
+  const input=document.getElementById('cfg-logo-file');
+  if(input) input.value='';
+  applyOrgBranding();
+  toast('🗑️ Logo dibuang');
+}
+
+function getWizLogoValue(){
+  // Check upload first, then URL input
+  if(window._logo_wiz) return window._logo_wiz;
+  const urlInput = document.getElementById('wiz-logo-url');
+  return urlInput ? urlInput.value.trim() : '';
+}
+
+function getCfgLogoValue(){
+  if(window._logo_cfg) return window._logo_cfg;
+  const urlInput = document.getElementById('cfg-logo-url');
+  return urlInput ? urlInput.value.trim() : '';
+}
+
+// Update wizFinish to use getWizLogoValue
+// Update saveOrgSettings to use getCfgLogoValue
+
+// Init logo preview in setup tab if logo exists
+function initLogoPreviewInSetup(){
+  const cfg = getCfg();
+  if(cfg.orgLogo){
+    showLogoPreview('cfg', cfg.orgLogo, 'Logo semasa');
+    window._logo_cfg = cfg.orgLogo;
+  }
+}
+
 
 dRecalc();
 
@@ -1441,9 +1613,34 @@ dRecalc();
           </div>
         </div>
         <div class="field-group" style="margin-top:12px">
-          <label>URL Logo (Optional)</label>
-          <input type="url" id="wiz-logo-url" placeholder="https://example.com/logo.png">
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Logo akan dipaparkan dalam header. Biarkan kosong untuk guna nama sahaja.</div>
+          <label>Logo Organisasi (Optional)</label>
+          <div style="background:#f8f9fc;border:1.5px dashed #c5d0e8;border-radius:10px;padding:14px;margin-bottom:4px">
+            <!-- Tab switch -->
+            <div style="display:flex;gap:6px;margin-bottom:12px">
+              <button type="button" id="wiz-logo-tab-upload" onclick="wizLogoTab('upload')" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid var(--blue);background:var(--blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer">⬆ Upload Fail</button>
+              <button type="button" id="wiz-logo-tab-url" onclick="wizLogoTab('url')" style="flex:1;padding:6px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer">🔗 Guna URL</button>
+            </div>
+            <!-- Upload panel -->
+            <div id="wiz-logo-upload-panel">
+              <label for="wiz-logo-file" style="display:block;text-align:center;cursor:pointer;padding:10px;border-radius:8px;background:#eef4ff;border:1px dashed #2557a7">
+                <div style="font-size:24px;margin-bottom:4px">🖼️</div>
+                <div style="font-size:13px;font-weight:500;color:var(--blue)">Klik untuk pilih fail logo</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:3px">PNG / SVG / WebP • Saiz terbaik: 400×120px • Maks 500KB</div>
+              </label>
+              <input type="file" id="wiz-logo-file" accept="image/png,image/svg+xml,image/webp,image/jpeg" style="display:none" onchange="wizLogoPreview(this)">
+            </div>
+            <!-- URL panel -->
+            <div id="wiz-logo-url-panel" style="display:none">
+              <input type="url" id="wiz-logo-url" placeholder="https://example.com/logo.png" style="margin-bottom:6px">
+              <div style="font-size:11px;color:var(--text-muted)">Guna URL logo yang boleh diakses awam</div>
+            </div>
+            <!-- Preview -->
+            <div id="wiz-logo-preview-box" style="display:none;margin-top:10px;padding:10px;background:#fff;border-radius:8px;text-align:center;border:1px solid var(--border)">
+              <img id="wiz-logo-preview-img" style="max-height:60px;max-width:200px;object-fit:contain">
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="wiz-logo-preview-info"></div>
+              <button type="button" onclick="wizLogoClear()" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;margin-top:4px">✕ Buang logo</button>
+            </div>
+          </div>
         </div>
         <div style="margin-top:16px">
           <button class="btn btn-primary" onclick="wizNext(2)">Seterusnya →</button>
